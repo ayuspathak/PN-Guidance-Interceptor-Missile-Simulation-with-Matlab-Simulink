@@ -1,4 +1,4 @@
-%% build_6dof_interceptor.m
+%% PN-Guidance-Interceptor-Missile-Simulation.m
 %
 % AUTO-BUILDS a nonlinear 6-DOF interceptor missile Simulink model.
 %
@@ -37,12 +37,12 @@ end
 
 new_system(modelName);
 open_system(modelName);
-set_param(modelName, 'Solver', 'ode45', 'StopTime', '20', ...
+set_param(modelName, 'Solver', 'ode45', 'StopTime', '30', ...
     'MaxStep', '0.01', 'RelTol', '1e-6');
 
-%% ------------------------------------------------------------------
-%  Helper to add a MATLAB Function block with a given script body
-% ------------------------------------------------------------------
+
+% Add a MATLAB Function block with a given script body
+
 function add_matlab_fcn_block(modelName, blockName, position, scriptText)
     blockPath = [modelName '/' blockName];
     add_block('simulink/User-Defined Functions/MATLAB Function', blockPath, ...
@@ -52,9 +52,9 @@ function add_matlab_fcn_block(modelName, blockName, position, scriptText)
     chart.Script = scriptText;
 end
 
-%% ------------------------------------------------------------------
-%  1) TARGET block  -- constant-velocity (non-maneuvering) target
-% ------------------------------------------------------------------
+
+%%  1) TARGET block  -- constant-velocity (non-maneuvering) target
+
 targetScript = sprintf([ ...
 'function [Rt, Vt] = fcn(t)\n' ...
 '%%#codegen\n' ...
@@ -71,9 +71,9 @@ add_matlab_fcn_block(modelName, 'Target', [40 40 160 100], targetScript);
 clockBlk = [modelName '/Clock'];
 add_block('simulink/Sources/Clock', clockBlk, 'Position', [40 140 60 160]);
 
-%% ------------------------------------------------------------------
-%  2) MISSILE_EOM block -- 12-state nonlinear equations of motion
-% ------------------------------------------------------------------
+
+%%  2) MISSILE_EOM block -- 12-state nonlinear equations of motion
+
 eomScript = sprintf([ ...
 'function xdot = fcn(x, F, M)\n' ...
 '%%#codegen\n' ...
@@ -121,9 +121,9 @@ add_block('simulink/Continuous/Integrator', intBlk, ...
 x0 = '[350;0;0;0;0;0; 0;15*pi/180;0; 0;0;0]';
 set_param(intBlk, 'InitialCondition', x0);
 
-%% ------------------------------------------------------------------
-%  3) MISSILE_NED_STATE -- convert state x into NED position & velocity
-% ------------------------------------------------------------------
+
+%%  3) MISSILE_NED_STATE -- convert state x into NED position & velocity
+
 nedScript = sprintf([ ...
 'function [Rm, Vm] = fcn(x)\n' ...
 '%%#codegen\n' ...
@@ -141,9 +141,9 @@ nedScript = sprintf([ ...
 
 add_matlab_fcn_block(modelName, 'Missile_NED_State', [860 260 1000 340], nedScript);
 
-%% ------------------------------------------------------------------
+
 %  4) GUIDANCE (True Proportional Navigation + Gravity Comp)
-% ------------------------------------------------------------------
+
 guidScript = sprintf([ ...
 'function acmd = fcn(Rt, Vt, Rm, Vm)\n' ...
 '%%#codegen\n' ...
@@ -160,9 +160,9 @@ guidScript = sprintf([ ...
 
 add_matlab_fcn_block(modelName, 'Guidance_PN', [1060 200 1200 280], guidScript);
 
-%% ------------------------------------------------------------------
-%  5) AUTOPILOT (Dynamic Gain Scheduling)
-% ------------------------------------------------------------------
+
+%%  5) AUTOPILOT (Dynamic Gain Scheduling)
+
 apScript = sprintf([ ...
 'function delta = fcn(acmd, x)\n' ...
 '%%#codegen\n' ...
@@ -192,9 +192,9 @@ apScript = sprintf([ ...
 
 add_matlab_fcn_block(modelName, 'Autopilot', [1060 320 1200 400], apScript);
 
-%% ------------------------------------------------------------------
-%  6) ACTUATORS -- 2nd order fin actuator dynamics (Demux -> 2x TF -> Mux)
-% ------------------------------------------------------------------
+
+%%  6) ACTUATORS -- 2nd order fin actuator dynamics (Demux -> 2x TF -> Mux)
+
 demuxBlk = [modelName '/Demux_Delta'];
 add_block('simulink/Signal Routing/Demux', demuxBlk, ...
     'Position', [860 380 870 440], 'Outputs', '2');
@@ -213,9 +213,9 @@ muxActBlk = [modelName '/Mux_Delta_Actual'];
 add_block('simulink/Signal Routing/Mux', muxActBlk, ...
     'Position', [1010 380 1020 440], 'Inputs', '2');
 
-%% ------------------------------------------------------------------
-%  7) AERODYNAMICS -- forces & moments from state + fin deflection
-% ------------------------------------------------------------------
+
+%%  7) AERODYNAMICS -- forces & moments from state + fin deflection
+
 aeroScript = sprintf([ ...
 'function [F, M, alpha, beta, Vt] = fcn(x, delta)\n' ...
 '%%#codegen\n' ...
@@ -262,9 +262,8 @@ aeroScript = sprintf([ ...
 
 add_matlab_fcn_block(modelName, 'Aerodynamics', [280 260 420 340], aeroScript);
 
-%% ------------------------------------------------------------------
-% 8) SCOPES / LOGGING
-% ------------------------------------------------------------------
+
+%% 8) SCOPES / LOGGING
 
 % Miss distance
 missDistScript = sprintf([ ...
@@ -326,9 +325,8 @@ add_block('simulink/Sinks/To Workspace',[modelName '/To_Workspace_tHit'],...
 'SaveFormat','Structure With Time',...
 'Position',[1400 320 1510 350]);
 
-%% ------------------------------------------------------------------
+
 % 9) WIRING
-% ------------------------------------------------------------------
 
 add_line(modelName,'Clock/1','Target/1','autorouting','on');
 
@@ -379,9 +377,6 @@ add_line(modelName,'Clock/1','Interception_Detection/3','autorouting','on');
 add_line(modelName,'Interception_Detection/1','To_Workspace_Hit/1','autorouting','on');
 add_line(modelName,'Interception_Detection/2','To_Workspace_tHit/1','autorouting','on');
 
-%% ------------------------------------------------------------------
-% 10) SAVE
-% ------------------------------------------------------------------
 
 save_system(modelName,[pwd filesep modelName '.slx']);
 
