@@ -23,8 +23,6 @@ The model is built from a few main pieces:
 
 `build_6dof_interceptor.m` is the main script. Running it in MATLAB creates the `Interceptor6DOF` Simulink model, connects the blocks, sets the solver configuration, and saves the model as `Interceptor6DOF.slx` in the current MATLAB folder.
 
-The script was written around modern MATLAB/Simulink APIs and is intended to be used with MATLAB releases around R2021b or newer.
-
 ## Model notes
 
 The simulation uses the NED (North-East-Down) frame for the inertial position and target geometry, with body-axis states for the vehicle dynamics.
@@ -41,10 +39,6 @@ The aerodynamic, mass, inertia, thrust, and target values in this project are **
 6. Check the miss-distance scope and the logged workspace variables.
 
 The script also prints the generated model name and a `sim('Interceptor6DOF')` command at the end.
-
-## What I want to improve
-
-This is a starting point rather than a finished flight-dynamics model. Some things I would like to improve later are better aerodynamic data, more realistic propulsion, additional validation cases, and a cleaner set of plots for analyzing guidance performance.
 
 ## Disclaimer
 
