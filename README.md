@@ -40,6 +40,8 @@ The aerodynamic, mass, inertia, thrust, and target values in this project are **
 
 The script also prints the generated model name and a `sim('Interceptor6DOF')` command at the end.
 
+Or you can just open the simulink file `Interceptor6DOF.slx` provided by me, and simply run it and get the readings of interception, missile & target positions and velocities.
+
 ## Disclaimer
 
 This repository is for academic/educational simulation work. The parameters are intentionally generic and illustrative, and the model should not be treated as a real-world weapon design or engineering specification.
