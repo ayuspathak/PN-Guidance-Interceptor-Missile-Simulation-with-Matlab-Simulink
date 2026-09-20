@@ -2,7 +2,7 @@
 
 This is my first GitHub project, built around a MATLAB/Simulink simulation of a nonlinear 6-DOF interceptor model using proportional navigation (PN) guidance.
 
-I put this together mainly to understand how the different parts of a guidance and flight-dynamics simulation fit together instead of treating the model as one big block.
+I put this together mainly to understand how the different parts of a guidance and flight-dynamics simulation fit together instead of treating the model as one big block. I have created both MATLAB and Simulink file for this, you can run and get the plot and results through both.
 
 ## What is included
 
