@@ -42,7 +42,11 @@ The script also prints the generated model name and a `sim('Interceptor6DOF')` c
 
 Or you can just open the simulink file `Interceptor6DOF.slx` provided by me, and simply run it and get the readings of interception, missile & target positions and velocities.
 
+You can:
+
 Double click the State_Integrator block and try changing the initial velocity.
+Double click the Guidance_PN block and change the Navigation Constant (N = 4) to N = 2 and observe how the missile struggles to hit the target.
+
 
 ## Disclaimer
 
